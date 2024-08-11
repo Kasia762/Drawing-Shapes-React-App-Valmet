@@ -1,14 +1,32 @@
 # Drawing Shapes App
 
-## Libraries used:
-react-konva for layers and shape trasformation
+## React components and technique
+On react side the followign techniques are used:
+`useState` allows to manage drawn shape for color change, transformation and selection id
 
-react-color for color selection tool
+`selectedShapesIndex` controls the selcted shape and applied trnasformation
 
-react-pro-sidebar for sidebar
+`useRef` event for HTML buttons to interact with React and canvas element - here utilized with Transform button, when pressed allows for shapes transformation
 
-## Saving and <Loading the drawing>
+Mouse movement  `onMouseDown`, `onMouseMove`, and `onMouseUp` handle user interaction with canvas, allows also for preview of the shape 
 
+## Application component architecture
+There are components like `<Stage>`, `<Stage>`, `<Layer>`, `<Rect>`, `<Circle>`, `<Line>` to manage specific function to visualize and set up the workspace and shapes
+
+Shapes are then rendered accordinigly to those states of selected shapes
+
+## React libraries
+`react-konva` for layers and shape trasformation
+Transformation used from Konva methods are: Moving shapes, transforming size, moving backwards or forwards and clearing canvas
+
+`react-color` for color selection tool
+
+`react-pro-sidebar` for sidebar
+
+## Saving and Loading the drawing
+
+Saving the drawing -> save the shapes array to JSON string
+file format: `JSON`
 
 
 

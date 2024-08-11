@@ -25,7 +25,8 @@ const App = () => {
   const [currentLine, setCurrentLine] = useState(null);
   // File name for download
   const fileName = 'shapes.json';
-  const windowHeight = window.innerHeight - 100;
+  const windowHeight = window.innerHeight-100;
+  const windowWidth = window.innerWidth-270;
   const canvasColor = 'white';
 
   // Handle mouse down event to start drawing
@@ -63,7 +64,7 @@ const App = () => {
         newShape={
           points: [pos.x, pos.y],
           stroke: color,
-          strokeWidth: 10,
+          strokeWidth: 8,
           id: `line_${Date.now()}`
         };
         setLineStartPos(pos);
@@ -323,7 +324,7 @@ const updateLastShape = (updatedShape) => {
       </div>
       </Sidebar>
       <Stage
-        width={window.innerWidth}
+        width={windowWidth}
         // Height varies for window for canvas to fit the window
         height={windowHeight} 
         onMouseDown={handleMouseDown}
@@ -332,11 +333,11 @@ const updateLastShape = (updatedShape) => {
       >
         <Layer>
           <Rect
-            width={windowHeight}
+            width={windowWidth}
             // Height varies for canvas to fit the window
             height={windowHeight}
             fill={canvasColor}
-            stroke ={"black"}
+            stroke ={"rgb(189, 219, 218)"}
           />
         </Layer>
         <Layer>
@@ -395,7 +396,6 @@ const updateLastShape = (updatedShape) => {
               width={currentShape.width}
               height={currentShape.height}
               fill={currentShape.fill}
-              opacity={0.5}
             />
           )}
           {currentShape && shapeType === 'circle' && (
@@ -404,7 +404,6 @@ const updateLastShape = (updatedShape) => {
               y={currentShape.y}
               radius={currentShape.radius}
               fill={currentShape.fill}
-              opacity={0.5}
             />
           )}
           {currentLine && shapeType === 'line' && (
@@ -412,7 +411,6 @@ const updateLastShape = (updatedShape) => {
               points={currentLine.points}
               stroke={currentLine.stroke}
               strokeWidth={currentLine.strokeWidth}
-              opacity={0.5}
             />
           )}
         </Layer>
