@@ -1,3 +1,17 @@
+# Drawing Shapes App
+
+## Libraries used:
+react-konva for layers and shape trasformation
+
+react-color for color selection tool
+
+react-pro-sidebar for sidebar
+
+## Saving and <Loading the drawing>
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

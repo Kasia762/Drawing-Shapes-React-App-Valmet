@@ -2,23 +2,31 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Stage, Layer, Rect, Circle, Transformer,Line } from 'react-konva';
 import { SketchPicker } from 'react-color';
 import './App.css';
-import { Sidebar, Menu, MenuItem, SubMenu, menuClasses, MenuItemStyles } from 'react-pro-sidebar';
-
+import { Sidebar} from 'react-pro-sidebar';
 
 const App = () => {
+  // Drawing Line, Rectangle or Circle Status
   const [isDrawing, setIsDrawing] = useState(false);
   const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
   const [startPos, setStartPos] = useState(null);
-  const [shapeCanMove, setShapeCanMove] = useState(false);
+  // Shape transforming Status
+  const [shapeTransform, setShapeTransform] = useState(false);
   const [selectedShapeIndex, setSelectedShapeIndex] = useState(null);
+  // color from SketchPicker
   const [color, setColor] = useState('#000000');
+  // Shape type with default rectangle shape
   const [shapeType, setShapeType] = useState('rectangle');
   const transformerRef = useRef(null);
+  // Highlight color of the the selected shape
   const shapeHighlight = 'yellow';
+  // Line
   const [lineStartPos, setLineStartPos] = useState(null);
   const [currentLine, setCurrentLine] = useState(null);
- 
+  // File name for download
+  const fileName = 'shapes.json';
+  const windowHeight = window.innerHeight - 100;
+  const canvasColor = 'white';
 
   // Handle mouse down event to start drawing
   const handleMouseDown = (event) => {
@@ -39,6 +47,7 @@ const App = () => {
           fill: color,
           id: `rect_${Date.now()}` // Ensure unique ID for transformer
         };
+
       //CIRCLE
       } else if (shapeType === 'circle') {
         newShape={
@@ -48,6 +57,7 @@ const App = () => {
           fill: color,
           id: `circ_${Date.now()}` // Ensure unique ID for transformer
         };
+
         //LINE
       } else if (shapeType === 'line') {
         newShape={
@@ -61,16 +71,6 @@ const App = () => {
       }
       setCurrentShape(newShape);
       setShapes([...shapes, newShape]);
-        /*
-        x: pos.x,
-        y: pos.y,
-        width: shapeType === 'rectangle' ? 0 : undefined,
-        height: shapeType === 'rectangle' ? 0 : undefined,
-        radius: shapeType === 'circle' ? 0 : undefined,
-        fill: color,
-        id: `shape_${Date.now()}` // Ensure unique ID
-      }]);
-      }*/
     }
   };
 
@@ -110,7 +110,6 @@ const App = () => {
 // Handle mouse up event to finalize the shape
 const handleMouseUp = () => {
   if (isDrawing && (currentShape || currentLine)) {
-    //updateLastShape(currentShape || currentLine);
     setCurrentShape(null);
     setCurrentLine(null);
     setStartPos(null);
@@ -140,23 +139,10 @@ const updateLastShape = (updatedShape) => {
     }
   };
 
-/*
-  const handleLoad = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const loadedShapes = JSON.parse(event.target.result);
-        setShapes(loadedShapes);
-      };
-      reader.readAsText(file);
-    }
-  };
-*/
-
   const clearCanvas = () => {
     setShapes([]);
-    setSelectedShapeIndex(null); // Optionally clear the selected shape index as well
+    setSelectedShapeIndex(null); 
+    // Optionally clear the selected shape index as well
   };
 
   const handleLoad = (event) => {
@@ -165,7 +151,7 @@ const updateLastShape = (updatedShape) => {
     if (!file) {
       return;
     }
-  
+
     const reader = new FileReader();
   
     reader.onload = (e) => {
@@ -182,8 +168,9 @@ const updateLastShape = (updatedShape) => {
 
 
   const handleSave = (e) => {
-    const jsonString = JSON.stringify(shapes, null, 2); // Convert shapes array to JSON string with formatting
-
+    // Convert shapes array to JSON string with formatting
+    const jsonString = JSON.stringify(shapes, null, 2); 
+    
     // Create a Blob with the JSON content
     const blob = new Blob([jsonString], { type: 'application/json' });
 
@@ -191,7 +178,8 @@ const updateLastShape = (updatedShape) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'shapes.json'; // The name of the downloaded file
+    // The name of the downloaded file
+    link.download = fileName; 
     document.body.appendChild(link);
     link.click();
 
@@ -205,17 +193,19 @@ const updateLastShape = (updatedShape) => {
     if (['line','rectangle','circle'].includes(action)) {
       setShapeType(action);
       setIsDrawing(true);
-      setShapeCanMove(false);
+      setShapeTransform(false);
     } else if (action === 'transform') {
-      setShapeCanMove(!shapeCanMove); // Toggle shape movement
+      // Toggle shape movement
+      setShapeTransform(!shapeTransform); 
       setIsDrawing(false);
     } else if (action === 'moveForward') {
       moveShapeForward();
     } else if (action === 'moveBackward') {
       moveShapeBackward();
     } else if (action === 'delete') {
+      // Trigger shape deletion
       setIsDrawing(false);
-      deleteShape(); // Trigger shape deletion
+      deleteShape(); 
     } else {
       setIsDrawing(false);
     }
@@ -224,8 +214,9 @@ const updateLastShape = (updatedShape) => {
   // Handle color change
   const handleColorChange = (color) => {
     setColor(color.hex);
-    if (shapeCanMove){
-      updateShapeColor(color.hex); // Apply the color to the selected shape
+    if (shapeTransform){
+      // Apply the color to the selected shape
+      updateShapeColor(color.hex);
     }
   };
 
@@ -278,77 +269,74 @@ const updateLastShape = (updatedShape) => {
     <div style={{ display: 'flex', height: '100%'}}>
       <Sidebar>
         <div class="buttonContainer">
-            <button
-              className={`button`} 
-              onClick={() => handleSave('save')}
-              >Save</button>
-            <input className={`button`}
-              type="file" accept="application/json" onChange={handleLoad} />
+        {`Drawing Shapes App`}
+          <button
+            className={`button`} 
+            onClick={() => handleSave('save')}
+            >Save</button>
+          <input className={`button`}
+            type="file" accept="application/json" onChange={handleLoad} />
         </div>
       <div class="container">
-          <SketchPicker
-            color={color}
-            onChangeComplete={handleColorChange}
-          />
-        </div> 
-        <div>
-          <button
-            className={`button ${isDrawing && shapeType === 'line' ? 'active' : 'default'}`} 
-            onClick={() => handleButtonClick('line')}
-            >Draw Line</button>
-          <button 
-            className={`button ${isDrawing && shapeType === 'rectangle' ? 'active' : 'default'}`}
-            onClick={() => handleButtonClick('rectangle')}
-            >Draw Rectangle</button>
-          <button
-            className={`button ${isDrawing && shapeType === 'circle' ? 'active' : 'default'}`} 
-            onClick={() => handleButtonClick('circle')}
-            >Draw Circle</button>
-          </div>
-          <div>
-          <button 
-            className={`button ${shapeCanMove ? 'active' : 'default'}`}
-            onClick={() => handleButtonClick('transform')}
-            >Transform</button>
-          <button
-            className={`button ${shapeCanMove && selectedShapeIndex !== null ? 'available' : 'blocked'}`}
-            onClick={() => handleButtonClick('moveBackward')}
-            >Move Backward</button>
-          <button
-            className={`button ${shapeCanMove && selectedShapeIndex !== null ? 'available' : 'blocked'}`}
-            onClick={() => handleButtonClick('moveForward')}
-            >Move Forward</button>
-        </div>
-        <div>
-          <button 
-            className={`button ${selectedShapeIndex !== null ? 'available' : 'blocked'}`}
-            onClick={() => handleButtonClick('delete')}
-            >Delete</button>
-          <button 
-            className={`button`}
-            onClick={() => clearCanvas()}
-            >Clear Canvas</button>
-          </div>       
-          <div>
-          {`Shape Type: ${shapeType}`}<br />
-          {`Color: ${color}`}<br />
-          {`Is Drawing: ${isDrawing}`}<br />
-          {`Shape Can Move: ${shapeCanMove}`}
-        </div>
-            
+        <SketchPicker
+          color={color}
+          onChangeComplete={handleColorChange}
+        />
+      </div> 
+      <div class="buttonContainer">
+        <button
+          className={`button ${isDrawing && shapeType === 'line' ? 'active' : 'default'}`} 
+          onClick={() => handleButtonClick('line')}
+          >Draw Line</button>
+        <button 
+          className={`button ${isDrawing && shapeType === 'rectangle' ? 'active' : 'default'}`}
+          onClick={() => handleButtonClick('rectangle')}
+          >Draw Rectangle</button>
+        <button
+          className={`button ${isDrawing && shapeType === 'circle' ? 'active' : 'default'}`} 
+          onClick={() => handleButtonClick('circle')}
+          >Draw Circle</button>
+      </div>
+      <div class="buttonContainer">
+        <button 
+          className={`button ${shapeTransform ? 'active' : 'default'}`}
+          onClick={() => handleButtonClick('transform')}
+          >Transform</button>
+        <button
+          className={`button ${shapeTransform && selectedShapeIndex !== null ? 'available' : 'blocked'}`}
+          onClick={() => handleButtonClick('moveBackward')}
+          >Move Backward</button>
+        <button
+          className={`button ${shapeTransform && selectedShapeIndex !== null ? 'available' : 'blocked'}`}
+          onClick={() => handleButtonClick('moveForward')}
+          >Move Forward</button>
+      </div>
+      <div class="buttonContainer">
+        <button 
+          className={`button ${selectedShapeIndex !== null ? 'available' : 'blocked'}`}
+          onClick={() => handleButtonClick('delete')}
+          >Delete</button>
+        <button 
+          className={`button`}
+          onClick={() => clearCanvas()}
+          >Clear Canvas</button>
+      </div>
       </Sidebar>
       <Stage
         width={window.innerWidth}
-        height={window.innerHeight - 50} // Adjust height to leave space for buttons
+        // Height varies for window for canvas to fit the window
+        height={windowHeight} 
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
         <Layer>
           <Rect
-            width={window.innerWidth}
-            height={window.innerHeight-100}
-            fill={"white"}
+            width={windowHeight}
+            // Height varies for canvas to fit the window
+            height={windowHeight}
+            fill={canvasColor}
+            stroke ={"black"}
           />
         </Layer>
         <Layer>
@@ -364,7 +352,7 @@ const updateLastShape = (updatedShape) => {
                   fill={shape.fill}
                   stroke={index === selectedShapeIndex ? shapeHighlight: "black"}
                   strokeWidth={index === selectedShapeIndex ? 3 : 1}
-                  draggable={shapeCanMove}
+                  draggable={shapeTransform}
                   onClick={() => handleShapeClick(index)}
                 />
               )}
@@ -377,7 +365,7 @@ const updateLastShape = (updatedShape) => {
                   fill={shape.fill}
                   stroke={index === selectedShapeIndex ? shapeHighlight : "black"}
                   strokeWidth={index === selectedShapeIndex ? 3 : 1}
-                  draggable={shapeCanMove}
+                  draggable={shapeTransform}
                   onClick={() => handleShapeClick(index)}
                 />
               )}
@@ -387,11 +375,11 @@ const updateLastShape = (updatedShape) => {
                   points={shape.points}
                   stroke={shape.stroke}
                   strokeWidth={shape.strokeWidth}
-                  draggable={shapeCanMove}
+                  draggable={shapeTransform}
                   onClick={() => handleShapeClick(index)}
                 />
               )}
-              {index === selectedShapeIndex && shapeCanMove && (
+              {index === selectedShapeIndex && shapeTransform && (
                 <Transformer
                   ref={transformerRef}
                   resizeEnabled={true}

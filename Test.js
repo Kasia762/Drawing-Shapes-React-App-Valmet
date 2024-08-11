@@ -1,5 +1,12 @@
 
 /*
+      <div>
+        {`Shape Type: ${shapeType}`}<br />
+        {`Color: ${color}`}<br />
+        {`Is Drawing: ${isDrawing}`}<br />
+        {`Shape Can Move: ${shapeTransform}`}
+      </div>
+
 const App = () => {
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
