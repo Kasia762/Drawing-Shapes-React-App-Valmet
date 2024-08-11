@@ -1,3 +1,4 @@
+/*
 .App {
   text-align: center;
 }
@@ -35,4 +36,41 @@
   to {
     transform: rotate(360deg);
   }
+}*/
+
+.container{
+  display:flex;
+  justify-content: center;
+  padding: 10px;
+}
+.buttonContainer{
+  background-color:pink;
+}
+
+.button{
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  padding: 10px 10px;
+  margin: 5px;
+  border-radius: 10px;
+}
+
+.button.blocked {
+  background-color: rgb(146, 143, 143);
+  color: white;
+}
+
+.button.default {
+  background-color: rgb(80, 72, 72);
+  color: white;
+}
+
+.button.active {
+  background-color: rgb(71, 158, 240);
+  color: white;
+}
+.button.available {
+  background-color: rgb(247, 237, 146);
+  color: white;
 }
